@@ -27,3 +27,5 @@ with wave.open("output.wav", "wb") as wf:
 
    end_time = time.monotonic()
    print(f"It took {end_time - start_time} seconds to generate {duration:.2f} seconds of audio")
+
+   

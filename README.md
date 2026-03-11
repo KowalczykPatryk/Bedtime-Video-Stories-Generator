@@ -1,32 +1,26 @@
-# Lullaby Stories
+# Bedtime Stories
 
+Program works in two modes:
+- user provides keywords which will work as he seed for the LLM to generate narative of the story
+- keywords are randomly selected from the predefined set of the topics  
 
-A small Python project that uses Stable Diffusion to generate images for my YouTube videos.
+Project is written fully in python. Important part is carefully prepared prompts for LLM and generative model that are placed in separate files. Aim is to experiment and explore already trained models. For LLM one idea is to use free models that are available on [openrouter](https://openrouter.ai/). The other is to download open source pretrained model and fine-tune it and optimize for the children stories generation so that it could be run locally with relatively slow NVIDIA GPU or optionally CPU if possible because CPU fallback really slows down generation. For image generation from description to explore is:
+-  Stable Diffusion model
 
----
+## Running Notes
 
-## 🔧 Prerequisites
-
-- Python ≥ 3.8  
-- NVIDIA GPU (optional; CPU fallback is very slow)  
-- Git  
-
----
-
-## ⚙️ Installation
-
-1. Clone this repo:  
+Repo cloning:  
    ```bash
    git clone https://github.com/KowalczykPatryk/lullabby_stories.git
    cd lullabby_stories
-````
+```
 
-2. Create and activate a virtual environment:
+Create and activate a virtual environment:  
     ```bash
    python3 -m venv venv
    source venv/bin/activate   # Linux/macOS
    venv\Scripts\activate      # Windows
-    ```
+```
 
 3. Install dependencies:
 
@@ -44,16 +38,4 @@ A small Python project that uses Stable Diffusion to generate images for my YouT
    **Important:** Do **not** commit `.env` to source control. It’s already in `.gitignore`.
 
 ---
-
-## Usage
-
-## 🛡️ Licensing & Attribution
-
-This project uses Stable Diffusion under the **Stability AI Community License**:
-
-* **Model**: Stable Diffusion 3.5 Large by Stability AI
-* **Model page**: [https://huggingface.co/stabilityai/stable-diffusion-3.5-large](https://huggingface.co/stabilityai/stable-diffusion-3.5-large)
-* **License**: [https://stability.ai/community-license](https://stability.ai/community-license)
-
-**Powered by Stability AI**
 
