@@ -1,0 +1,2 @@
+White bedtime story about: {seed_words}. This story should have moral conclusion. 
+In length it should have a few paragraphs which have to be separated by '\n\n'.

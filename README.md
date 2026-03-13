@@ -8,6 +8,12 @@ Project is written fully in python. Important part is carefully prepared prompts
 - generative adversarial networks (GANs)
 - diffusion models
 
+The LLM given the seed words generates plot of the story and separates paragraphs by `\n\n` so that later each one can be taken invidually. Each paragraphs is provided to the LLM to generate descriptive prompt for the image-generate model. Also each one the same paragraphs is inputed to the TTS model to generate voice over for the story. Based on the length of audio files images are seamed into one video. The text of the paragraph is placed above the image while being played.
+
+Additional layer is to create automation pipeline for the whole process where when provided necessary authentications, the generation can be scheduled for the selected date and time. Then uploaded directly to the youtube channel.
+
+To improve output quality of the text-to-image model I used information from this [paper](https://arxiv.org/pdf/2209.11711) and this [website](https://getimg.ai/guides/guide-to-writing-text-to-image-prompts).
+
 ## Notes
 
 Repo cloning:  
@@ -18,8 +24,8 @@ Repo cloning:
 
 Create and activate a virtual environment:  
    ```bash
-   python3 -m venv venv
-   source venv/bin/activate   # Linux/macOS
+   python3 -m venv .venv
+   source .venv/bin/activate   # Linux/macOS
    venv\Scripts\activate      # Windows
    ```
 

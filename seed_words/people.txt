@@ -1,0 +1,75 @@
+boy
+girl
+brother
+sister
+orphan child
+brave child hero
+curious child explorer
+mischievous child
+shy child
+clever child
+poor child
+mother
+father
+grandmother
+grandfather
+aunt
+uncle
+older sibling
+younger sibling
+stepmother
+stepfather
+king
+queen
+prince
+princess
+royal advisor
+court jester
+knight
+royal guard
+wizard
+witch
+fairy
+sorcerer
+enchantress
+magician
+fairy godmother
+magical mentor
+evil witch
+wicked stepmother
+giant
+pirate captain
+thief
+evil king
+greedy merchant
+trickster
+wise old man
+wise old woman
+teacher
+librarian
+inventor
+traveler
+guardian
+mentor
+baker
+farmer
+fisherman
+blacksmith
+tailor
+shopkeeper
+woodcutter
+shepherd
+gardener
+explorer
+sailor
+pirate
+knight
+treasure hunter
+captain
+adventurer
+teacher
+school principal
+classmate
+best friend
+bully
+new student

@@ -1,7 +1,0 @@
-You are a friendly storyteller. Generate a JSON-formatted bedtime story about <story_idea>:
-{
-  "title": "...",
-  "paragraphs": [
-    "..."
-  ]
-}
