@@ -1,16 +1,18 @@
 """
-This module runs the whole process
+This module runs the whole process of video generation
 """
 
 import os
-import random
 import logging
 from dotenv import load_dotenv
-from src.llm_client import LLMClient
-logger = logging.getLogger(__name__)
+from src.llm import LLMClient
+from src.utils import get_paragraphs
+from src.tti import TTIClient
+from src.tts import TTSClient
 
 
 if __name__=="__main__":
+    logger = logging.getLogger(__name__)
     logging.basicConfig(filename="file.log",
                     filemode='a',
                     format='%(asctime)s,%(msecs)03d %(name)s %(levelname)s %(message)s',
@@ -25,38 +27,37 @@ if __name__=="__main__":
     MODEL_NAME = "stepfun/step-3.5-flash:free"
     llm = LLMClient(model=MODEL_NAME, api_key=OPENROUTER_API_KEY)
 
-    with open("prompts/story_user_prompt.txt", encoding="utf-8") as story_user_prompt_file, \
-         open("prompts/story_system_prompt.txt", encoding="utf-8") as story_system_prompt_file, \
-         open("seed_words/people.txt", encoding="utf-8") as people_file, \
-         open("seed_words/animals.txt", encoding="utf-8") as animals_file, \
-         open("seed_words/items.txt", encoding="utf-8") as items_file:
-        person = random.choice(people_file.readlines()).strip()
-        animal = random.choice(animals_file.readlines()).strip()
-        item = random.choice(items_file.readlines()).strip()
-        user_prompt = story_user_prompt_file.read().format(
-            seed_words=f"{person}, {animal} and {item}"
+    story = llm.generate_story(
+            "prompts/story_user_prompt.txt", 
+            "prompts/story_system_prompt.txt", 
+            ["seed_words/people.txt", "seed_words/animals.txt", "seed_words/items.txt"]
         )
-        res = llm.ask(
-            user=user_prompt, system=story_system_prompt_file.read()
-        ).choices[0].message.content
+    paragraphs = get_paragraphs(story)
+    image_descriptions = llm.generate_paragraphs_image_descriptions(
+            "prompts/description_for_image_prompt.txt",
+            story
+        )
 
-    logger.info("Seed words are: %s, %s and %s", person, animal, item)
-    logger.info("The story:")
-    logger.info(res)
-    paragraphs = res.split("\n\n")
-    for paragraph in paragraphs:
-        logger.info("start %s stop\n", paragraph)
+    DEAPI_API_KEY = os.environ['DEAPI_API_KEY']
 
-    with open("prompts/description_for_image_prompt.txt", encoding="utf-8") as dfip_file:
-        template = dfip_file.read()
+    URL = "https://api.deapi.ai/api/v1/client/txt2img"
 
-    paragraphs_descriptions = {}
-    
-    for paragraph in paragraphs:
-        if not paragraph.strip():
-            continue
-        desc = template.format(paragraph=paragraph, whole_story=res)
-        paragraphs_descriptions[paragraph] = llm.ask(
-            user=desc
-        ).choices[0].message.content
-        logger.info("Description: %s", paragraphs_descriptions[paragraph])
+    tti = TTIClient(URL, DEAPI_API_KEY)
+
+    images_filepaths = []
+    for i, description in enumerate(image_descriptions):
+        FILEPATH = f"images/paragraph{i}.png"
+        images_filepaths.append(FILEPATH)
+        tti.generate_image(
+            description,
+            FILEPATH,
+            [
+                "negative_prompts/general.txt"
+            ]
+        )
+
+    tts = TTSClient(voice="train_dotrice")
+    audio_filepaths = []
+    for i, paragraph in enumerate(paragraphs):
+        FILEPATH = f"audio/paragraph{i}.wav"
+        tts.generate(paragraph, FILEPATH)

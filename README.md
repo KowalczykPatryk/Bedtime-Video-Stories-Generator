@@ -12,7 +12,9 @@ The LLM given the seed words generates plot of the story and separates paragraph
 
 Additional layer is to create automation pipeline for the whole process where when provided necessary authentications, the generation can be scheduled for the selected date and time. Then uploaded directly to the youtube channel.
 
-To improve output quality of the text-to-image model I used information from this [paper](https://arxiv.org/pdf/2209.11711) and this [website](https://getimg.ai/guides/guide-to-writing-text-to-image-prompts).
+To improve output quality of the text-to-image model I used information from this [paper](https://arxiv.org/pdf/2209.11711) and this [website](https://getimg.ai/guides/guide-to-writing-text-to-image-prompts). Negative prompts can improve quality, more about this [here](https://medium.com/@johnnythedeveloper/negative-prompts-for-perfect-ai-image-generation-4b45744363c7). Text-to-image api: [deapi](https://docs.deapi.ai/)
+
+As the text-to-speech model I used [Tortoise-TTS](https://github.com/neonbjb/tortoise-tts). [Here](https://medium.com/@martin-thissen/tortoise-tts-fully-explained-part-1-architecture-design-ec4047c5ab75) is good explanation of the architecture used in it.
 
 ## Notes
 
