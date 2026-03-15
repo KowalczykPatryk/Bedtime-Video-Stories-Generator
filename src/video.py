@@ -18,8 +18,9 @@ def create_video(images_filepaths: list[str],
 
     video_clips = []
     for i, (image_filepath, audio_filepath) in enumerate(zip(images_filepaths, audio_filepaths)):
+        silence = AudioClip(lambda t: 0, duration=0.2, fps=44100)
         audio = AudioFileClip(audio_filepath)
-        audio = audio.with_duration(audio.duration+0.2)
+        audio = concatenate_audioclips([audio, silence])
         if i == 0:
             silence = AudioClip(lambda t: 0, duration=1, fps=44100)
             audio = concatenate_audioclips([silence, audio])
@@ -28,7 +29,7 @@ def create_video(images_filepaths: list[str],
         clip = clip.with_audio(audio)
         video_clips.append(clip)
 
-    for i, _ in range(len(video_clips) - 1):
+    for i in range(len(video_clips) - 1):
         video_clips[i] = FadeOut(0.5).apply(video_clips[i])
         video_clips[i+1] = FadeIn(0.5).apply(video_clips[i+1])
 
@@ -46,7 +47,7 @@ def create_video(images_filepaths: list[str],
     )
     video = video.with_audio(audio_combined)
 
-    video.write_videofile(video_filepath)
+    video.write_videofile(video_filepath, fps=24)
 
 # # Generate a text clip
 # txt_clip = TextClip("GeeksforGeeks", fontsize = 70, color = 'white')
@@ -56,4 +57,10 @@ def create_video(images_filepaths: list[str],
 
 # # Overlay the text clip on the first video clip
 # video = CompositeVideoClip([clip, txt_clip])
+
+if __name__ == "__main__":
+    create_video(
+        ["test/images/test_image.jpeg", "test/images/test_image.jpeg"],
+        ["test/audio/test_audio.mp3", "test/audio/test_audio.mp3"],
+        "test/video/sth.mp4", "music/background_music.mp3")
     
