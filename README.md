@@ -14,7 +14,11 @@ Additional layer is to create automation pipeline for the whole process where wh
 
 To improve output quality of the text-to-image model I used information from this [paper](https://arxiv.org/pdf/2209.11711) and this [website](https://getimg.ai/guides/guide-to-writing-text-to-image-prompts). Negative prompts can improve quality, more about this [here](https://medium.com/@johnnythedeveloper/negative-prompts-for-perfect-ai-image-generation-4b45744363c7). Text-to-image api: [deapi](https://docs.deapi.ai/)
 
-As the text-to-speech model I used [Tortoise-TTS](https://github.com/neonbjb/tortoise-tts). [Here](https://medium.com/@martin-thissen/tortoise-tts-fully-explained-part-1-architecture-design-ec4047c5ab75) is good explanation of the architecture used in it.
+As the text-to-speech model I used [Tortoise-TTS](https://github.com/neonbjb/tortoise-tts). [Here](https://medium.com/@martin-thissen/tortoise-tts-fully-explained-part-1-architecture-design-ec4047c5ab75) is good explanation of the architecture used in it. On the whole paragraph the process run out of the memory so TTS will be used for each sentence separatelly.
+
+For working with video I used [MoviePy](https://zulko.github.io/moviepy/getting_started/index.html#getting-started). Here is introduction [intro](https://www.geeksforgeeks.org/python/introduction-to-moviepy/).
+
+As the background music I used [this](https://soundcloud.com/rossbugden/bedtime-stories).
 
 ## Notes
 

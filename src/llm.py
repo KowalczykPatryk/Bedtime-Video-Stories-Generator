@@ -25,7 +25,7 @@ class LLMClient:
             model=self.model,
             messages=messages,
             **kwargs
-        )
+        ).choices[0].message.content
         return res
 
     def generate_story(self,
@@ -50,7 +50,7 @@ class LLMClient:
             )
             res = self.ask(
                 user=user_prompt, system=story_system_prompt_file.read()
-            ).choices[0].message.content
+            )
 
         if self.logger:
             self.logger.info("Seed words are: %s", ", ".join(seed_words))
@@ -75,9 +75,14 @@ class LLMClient:
             desc = template.format(paragraph=paragraph, whole_story=story)
             paragraphs_descriptions.insert(
                 i,
-                self.ask(user=desc).choices[0].message.content
+                self.ask(user=desc)
             )
             if self.logger:
                 self.logger.info("Paragraph: %s", paragraph)
                 self.logger.info("Description: %s", paragraphs_descriptions[i])
         return paragraphs_descriptions
+
+    def ask_from_file(self, filepath: str) -> str:
+        """Prompt is taken from the provided file"""
+        with open(filepath, encoding="utf-8") as file:
+            return self.ask(file.read())

@@ -1,0 +1,3 @@
+Come up with the creative title for for the story:
+{story}
+You can return only title for the story, nothing more.

@@ -2,6 +2,8 @@
 This module contains TTSClient class that can be used for inference with the tortoise-tts model
 """
 
+from logging import Logger
+import logging
 import torch
 import torchaudio
 
@@ -16,7 +18,8 @@ class TTSClient:
     that will be used to clone the voice in them
     voice - string that coresponds to the name of the voice saved inside tortoise-tts package
     """
-    def __init__(self, voice_clips_filepaths: list[str] = None, voice: str = None):
+    def __init__(self, log: Logger, voice_clips_filepaths: list[str] = None, voice: str = None):
+        self.logger = log
         if voice_clips_filepaths and voice:
             raise ValueError("Specify either voice clips or built-in voice, not both")
         if voice_clips_filepaths:
@@ -27,14 +30,14 @@ class TTSClient:
         if voice:
             voice_samples, _ = load_voice(voice)
             self.reference_clips = voice_samples
-        self.tts = api.TextToSpeech(use_deepspeed=True, kv_cache=True, half=True)
+        self.tts = api.TextToSpeech(use_deepspeed=False, kv_cache=False, half=False)
 
     def generate(self, text: str, filepath: str):
         """
         Calls the model with the given text and saves it in the provided filepath
         Note file extension has to be .wav
         """
-
+        self.logger.info("TTS Starting generation")
         with torch.no_grad():
             # Pulse Code Modulation is a method of digitising analog signals by sampling
             # the signal’s amplitude at regular intervals and then
@@ -43,20 +46,32 @@ class TTSClient:
             pcm_audio = self.tts.tts_with_preset(
                 text,
                 voice_samples=self.reference_clips,
-                preset="standard"
+                preset="fast"
             )
+        self.logger.info("TTS Generation ended")
+
+        src = pcm_audio.squeeze(0).cpu()
+
+        self.logger.info("TTS Saving file")
 
         # wav file format after some header saves raw PCM samples without any compression
         torchaudio.save(
             filepath,
-            pcm_audio.squeeze(0).cpu(),
+            src,
             24000
         )
+        self.logger.info("TTS Saved successfully")
 
 if __name__ == "__main__":
-    tts = TTSClient(voice="train_dotrice")
+    logger = logging.getLogger(__name__)
+    logging.basicConfig(filename="file.log",
+                    filemode='a',
+                    format='%(asctime)s,%(msecs)03d %(name)s %(levelname)s %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S',
+                    level=logging.DEBUG)
+    tts = TTSClient(logger, voice="train_dotrice")
     tts.generate("""
-                 Tomas picked up the crown, and as soon as it touched his hands, a warm feeling spread through him. A tiny voice, like the rustle of leaves, whispered: "This crown is enchanted. It will grant one wish to whoever wears it, but only if the wish comes from a selfless heart." Tomas thought of his village, which had been suffering from a long drought. Without hesitation, he placed the crown on his head and wished for rain to water the parched fields and bring life back to the soil. Instantly, dark clouds gathered, and a gentle rain fell, soaking the earth and filling the villagers with joy.
+                 Once upon a time, there was a gentle adventurer named Elara who traveled far and wide, her only companions a sturdy walking stick and a small white teapot.
                 """,
-                "test.wav"
+                "test1.wav"
             )

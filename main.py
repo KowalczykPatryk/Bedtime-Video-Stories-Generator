@@ -6,9 +6,10 @@ import os
 import logging
 from dotenv import load_dotenv
 from src.llm import LLMClient
-from src.utils import get_paragraphs
+from src.utils import get_paragraphs, delete_files, concatenate_audio
 from src.tti import TTIClient
 from src.tts import TTSClient
+from src.video import create_video
 
 
 if __name__=="__main__":
@@ -56,8 +57,24 @@ if __name__=="__main__":
             ]
         )
 
-    tts = TTSClient(voice="train_dotrice")
-    audio_filepaths = []
+    tts = TTSClient(logger, voice="train_dotrice")
+    audio_paragraphs_filepaths = []
     for i, paragraph in enumerate(paragraphs):
+        audio_sentences_filepaths = []
+        for j, sentence in enumerate(list(map(lambda a: a.strip()+".", paragraph.split(".")[:-1]))):
+            FILEPATH = f"audio/sentence{j}.wav"
+            audio_sentences_filepaths.append(FILEPATH)
+            tts.generate(sentence, FILEPATH)
         FILEPATH = f"audio/paragraph{i}.wav"
-        tts.generate(paragraph, FILEPATH)
+        audio_paragraphs_filepaths.append(FILEPATH)
+        concatenate_audio(audio_sentences_filepaths, FILEPATH)
+        delete_files(audio_sentences_filepaths)
+
+    title = llm.ask_from_file("prompts/video_title_prompt.txt")
+
+    VIDEO_FILEPATH = "video/"+"_".join(title.split(" ")) + ".mp4"
+
+    create_video(images_filepaths, audio_paragraphs_filepaths, VIDEO_FILEPATH, "music/background_music.mp3")
+
+    #delete_files(images_filepaths)
+    #delete_files(audio_filepaths)
