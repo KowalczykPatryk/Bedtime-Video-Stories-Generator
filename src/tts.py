@@ -1,77 +1,72 @@
 """
-This module contains TTSClient class that can be used for inference with the tortoise-tts model
+This module contains TTSClient class that can be used for inference with the tts models
 """
 
-from logging import Logger
-import logging
+from boson_multimodal.serve.serve_engine import HiggsAudioServeEngine, HiggsAudioResponse
+from boson_multimodal.data_types import ChatMLSample, Message, AudioContent
+
 import torch
 import torchaudio
-
-from tortoise import api
-from tortoise.utils.audio import load_audio, load_voice
 
 
 class TTSClient:
     """
-    This class uses tortoise-tts api to generate audio file for the given text
-    voice_clips_filepaths - filepaths to the custom samples of some voice
-    that will be used to clone the voice in them
-    voice - string that coresponds to the name of the voice saved inside tortoise-tts package
+    Manages interactions with the text-to-speech models from bosonai
     """
-    def __init__(self, log: Logger, voice_clips_filepaths: list[str] = None, voice: str = None):
-        self.logger = log
-        if voice_clips_filepaths and voice:
-            raise ValueError("Specify either voice clips or built-in voice, not both")
-        if voice_clips_filepaths:
-            # sampling rate is in Hz and means how many times in a second
-            # measurement was taken because audio in files is not saved continuously
-            # but in discrete form
-            self.reference_clips = [load_audio(p, 22050) for p in voice_clips_filepaths]
-        if voice:
-            voice_samples, _ = load_voice(voice)
-            self.reference_clips = voice_samples
-        self.tts = api.TextToSpeech(use_deepspeed=False, kv_cache=False, half=False)
+    def __init__(self, model_path: str = "bosonai/higgs-audio-v2-generation-3B-base",
+                 audio_tokenizer_path: str = "bosonai/higgs-audio-v2-tokenizer"):
+        self.model_path = model_path
+        self.audio_tokenizer_path = audio_tokenizer_path
 
-    def generate(self, text: str, filepath: str):
+    def generate(
+            self,
+            text: str,
+            result_filepath: str,
+            system_prompt: str
+            ):
         """
-        Calls the model with the given text and saves it in the provided filepath
-        Note file extension has to be .wav
+        Passes the text for which speech will be generated with the system prompt
+        which tunes features and quality of the voice.
         """
-        self.logger.info("TTS Starting generation")
-        with torch.no_grad():
-            # Pulse Code Modulation is a method of digitising analog signals by sampling
-            # the signal’s amplitude at regular intervals and then
-            # encoding these samples into binary numbers.
-            # Here audio is just numbers inside torch.Tensor
-            pcm_audio = self.tts.tts_with_preset(
-                text,
-                voice_samples=self.reference_clips,
-                preset="fast"
+        messages = [
+            Message(
+                role="system",
+                content=system_prompt,
+            ),
+            Message(
+                role="user",
+                content=text,
+            ),
+        ]
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        print(device)
+        serve_engine = HiggsAudioServeEngine(
+            self.model_path,
+            self.audio_tokenizer_path,
+            device=device
             )
-        self.logger.info("TTS Generation ended")
-
-        src = pcm_audio.squeeze(0).cpu()
-
-        self.logger.info("TTS Saving file")
-
-        # wav file format after some header saves raw PCM samples without any compression
-        torchaudio.save(
-            filepath,
-            src,
-            24000
+        output: HiggsAudioResponse = serve_engine.generate(
+            chat_ml_sample=ChatMLSample(messages=messages),
+            max_new_tokens=1024,
+            temperature=0.3,
+            top_p=0.95,
+            top_k=50,
+            stop_strings=["<|end_of_text|>", "<|eot_id|>"],
         )
-        self.logger.info("TTS Saved successfully")
+        torchaudio.save(
+            result_filepath,
+            torch.from_numpy(output.audio)[None, :],
+            output.sampling_rate
+            )
+
+
 
 if __name__ == "__main__":
-    logger = logging.getLogger(__name__)
-    logging.basicConfig(filename="file.log",
-                    filemode='a',
-                    format='%(asctime)s,%(msecs)03d %(name)s %(levelname)s %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S',
-                    level=logging.DEBUG)
-    tts = TTSClient(logger, voice="train_dotrice")
-    tts.generate("""
-                 Once upon a time, there was a gentle adventurer named Elara who traveled far and wide, her only companions a sturdy walking stick and a small white teapot.
-                """,
-                "test1.wav"
+    tts = TTSClient()
+    with open("prompts/tts_system_prompt.txt", encoding="utf-8") as f1,\
+    open("prompts/tests/tts_user_prompt.txt", encoding="utf-8") as f2:
+        tts.generate(
+            f2.read(),
+            "test3.wav",
+            f1.read()
             )

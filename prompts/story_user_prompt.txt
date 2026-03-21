@@ -1,2 +1,3 @@
-White bedtime story about: {seed_words}. This story should have moral conclusion. 
-In length it should have a few paragraphs which have to be separated by '\n\n'.
+Write a bedtime story about: {seed_words}. 
+The story should include a moral conclusion. 
+It should consist of a few paragraphs, each separated by '\n\n'.

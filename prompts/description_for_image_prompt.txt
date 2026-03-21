@@ -1,14 +1,9 @@
-Create a detailed description for the text-to-image model. 
-It should describe what is happening in this paragraph. 
-Identify the main subject of the image.
-Don’t use verbs to instruct the model (e.g., “create”, “generate”, “add”). Simply describe what should be visible in the image.
-Use descriptive adjectives and adverbs to add depth to your descriptions. This helps the AI generate more accurate, creative, and nuanced images.
-Define the setting, for example, “a bustling city street” or “a serene mountain landscape”.
-Describe the mood or feeling, like “joyful atmosphere” or “melancholic scene”.
-Point out the lighting type, such as “soft ambient light” or “harsh sunlight”.
-Mention the desired colors, e.g., “vibrant pastel colors”.
-Indicate the perspective, such as “first-person view” or “bird's eye view”.
-Your description should have no text decorations.
+Create a detailed description for a text-to-image model based on the paragraph below.
+- Describe the main subject, setting, mood, lighting, colors, perspective, and any important objects.
+- Use descriptive adjectives and adverbs for depth.
+- Do NOT include verbs that instruct the model (e.g., “create”, “generate”, “add”).
+- Do NOT use any markdown, bold, italics, or any other text decorations. Output plain text only.
+- Write continuous sentences suitable for generating an illustration for children’s storybooks.
 
 The text of the paragraph is: {paragraph}. 
 For the context here is the complete content of the story: {whole_story}

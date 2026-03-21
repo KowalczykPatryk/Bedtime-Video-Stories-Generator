@@ -3,7 +3,9 @@ This module includes class for communication with the text-to-image model
 """
 
 import time
+import os
 from logging import Logger
+from dotenv import load_dotenv
 import requests
 
 
@@ -60,13 +62,16 @@ class TTIClient:
         while True:
             response = requests.get(url, headers=headers, timeout=10).json()
             if response["data"]["status"] in ("pending", "processing"):
-                self.logger.info(response["data"]["progress"])
-                time.sleep(20)
+                if self.logger:
+                    self.logger.info(response["data"]["progress"])
+                time.sleep(30)
             elif response["data"]["status"] == "done":
-                self.logger.info("Image generated")
+                if self.logger:
+                    self.logger.info("Image generated")
                 break
             elif response["data"]["status"] == "error":
-                self.logger.info("Generation error")
+                if self.logger:
+                    self.logger.info("Generation error")
                 break
 
         if response["data"]["status"] == "done":
@@ -74,3 +79,19 @@ class TTIClient:
             print(response)
             with open(output_image_filepath, "wb") as f:
                 f.write(response.content)
+
+if __name__ == "__main__":
+    load_dotenv()
+    DEAPI_API_KEY = os.environ['DEAPI_API_KEY']
+
+    URL = "https://api.deapi.ai/api/v1/client/txt2img"
+
+    tti = TTIClient(URL, DEAPI_API_KEY)
+    with open("prompts/tests/image_description.txt", encoding="utf-8") as description_file:
+        tti.generate_image(
+                description_file.read(),
+                "test.png",
+                [
+                    "negative_prompts/general.txt"
+                ]
+            )

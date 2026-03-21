@@ -3,9 +3,14 @@ Using the OpenAI SDK to connect to OpenRouter
 """
 
 import random
+import os
 from logging import Logger
+from dotenv import load_dotenv
 from openai import OpenAI
-from src.utils import get_paragraphs
+if __name__ == "__main__":
+    from utils import get_paragraphs
+else:
+    from src.utils import get_paragraphs
 
 class LLMClient:
     """Sends prompt to the OpenRouter and retreives the response"""
@@ -86,3 +91,13 @@ class LLMClient:
         """Prompt is taken from the provided file"""
         with open(filepath, encoding="utf-8") as file:
             return self.ask(file.read())
+
+if __name__ == "__main__":
+    load_dotenv()
+    OPENROUTER_API_KEY = os.environ['OPENROUTER_API_KEY']
+    assert OPENROUTER_API_KEY != "", \
+    "You must set your OpenRouter API key in .env before running this"
+    llm = LLMClient("stepfun/step-3.5-flash:free", OPENROUTER_API_KEY)
+    with open("prompts/tests/llm_user_prompt.txt", encoding="utf-8") as prompt_file:
+        response = llm.ask(prompt_file.read())
+        print(response)

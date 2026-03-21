@@ -26,7 +26,7 @@ if __name__=="__main__":
     "You must set your OpenRouter API key in .env before running this"
 
     MODEL_NAME = "stepfun/step-3.5-flash:free"
-    llm = LLMClient(model=MODEL_NAME, api_key=OPENROUTER_API_KEY)
+    llm = LLMClient(model=MODEL_NAME, api_key=OPENROUTER_API_KEY, logger=logger)
 
     story = llm.generate_story(
             "prompts/story_user_prompt.txt", 
@@ -57,14 +57,17 @@ if __name__=="__main__":
             ]
         )
 
-    tts = TTSClient(logger, voice="train_dotrice")
+    with open("prompts/tts_system_prompt.txt", encoding="utf-8") as tts_system_prompt_file:
+        tts_system_prompt = tts_system_prompt_file.read()
+
+    tts = TTSClient()
     audio_paragraphs_filepaths = []
     for i, paragraph in enumerate(paragraphs):
         audio_sentences_filepaths = []
         for j, sentence in enumerate(list(map(lambda a: a.strip()+".", paragraph.split(".")[:-1]))):
             FILEPATH = f"audio/sentence{j}.wav"
             audio_sentences_filepaths.append(FILEPATH)
-            tts.generate(sentence, FILEPATH)
+            tts.generate(sentence, FILEPATH, tts_system_prompt)
         FILEPATH = f"audio/paragraph{i}.wav"
         audio_paragraphs_filepaths.append(FILEPATH)
         concatenate_audio(audio_sentences_filepaths, FILEPATH)
@@ -74,7 +77,13 @@ if __name__=="__main__":
 
     VIDEO_FILEPATH = "video/"+"_".join(title.split(" ")) + ".mp4"
 
-    create_video(images_filepaths, audio_paragraphs_filepaths, VIDEO_FILEPATH, "music/background_music.mp3")
+    create_video(
+        images_filepaths,
+        audio_paragraphs_filepaths,
+        paragraphs,
+        VIDEO_FILEPATH,
+        "music/background_music.mp3"
+        )
 
-    #delete_files(images_filepaths)
-    #delete_files(audio_filepaths)
+    delete_files(images_filepaths)
+    delete_files(audio_paragraphs_filepaths)
