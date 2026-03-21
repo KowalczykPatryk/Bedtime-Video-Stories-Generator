@@ -17,6 +17,8 @@ As the text-to-speech model at the beggining I used [Tortoise-TTS](https://githu
 Model weights must be loaded to the RAM for the inference. [Swap space](https://www.geeksforgeeks.org/operating-systems/swap-space-in-operating-system/) helped with OS killing python process for requesting too much RAM.
 
 Creating swap space:  
+
+
    ```bash
    sudo fallocate -l [SIZE]G /[FILENAME]
    sudo chmod 600 /[FILENAME]
@@ -28,6 +30,10 @@ Creating swap space:
 For working with video I used [MoviePy](https://zulko.github.io/moviepy/getting_started/index.html#getting-started). Here is introduction [intro](https://www.geeksforgeeks.org/python/introduction-to-moviepy/).
 
 As the background music I used [this](https://soundcloud.com/rossbugden/bedtime-stories).
+
+## Demo
+
+[Watch the demo](https://github.com/user-attachments/assets/17fb21f4-bd65-4f0a-9069-3798bded9bd3)
 
 ## Notes
 
