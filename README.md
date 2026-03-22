@@ -31,6 +31,10 @@ For working with video I used [MoviePy](https://zulko.github.io/moviepy/getting_
 
 As the background music I used [this](https://soundcloud.com/rossbugden/bedtime-stories).
 
+## Diagram
+
+![Diagram](assets/story_generation_diagram.png)
+
 ## Demo
 
 [Watch the demo](https://github.com/user-attachments/assets/17fb21f4-bd65-4f0a-9069-3798bded9bd3)
